@@ -9,14 +9,14 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-git clone https://github.com/PatrickKvartsaniy/ciklum-test.git
+run $git clone https://github.com/PatrickKvartsaniy/ciklum-test.git
 
 
 ## Running the tests
 
-Tests run automatically after you start build
+Tests run automatically after you start build process
 
-## Deployment
+## Build    
 
 Add additional notes about how to deploy this on a live system
 
