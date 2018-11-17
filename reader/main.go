@@ -2,38 +2,60 @@ package main
 
 import (
 	"bufio"
-	"ciklum/reader/models"
+	"ciklum/api"
 	"ciklum/reader/tools"
+	"context"
 	"encoding/csv"
-	"fmt"
 	"io"
 	"log"
 	"os"
+
+	"google.golang.org/grpc"
 )
 
+const (
+	address = "localhost:50051"
+)
+
+func NewCustomer(line []string) *api.Customer {
+	return &api.Customer{
+		Name:  line[1],
+		Email: line[2],
+		Phone: line[3],
+	}
+}
+
+func createCustomer(client api.WriterClient, customer *api.Customer) {
+	resp, err := client.CreateCustomer(context.Background(), customer)
+	if err != nil {
+		log.Fatalf("Could not create Customer: %v", err)
+	}
+	if resp.Success {
+		log.Printf("A new Customer has been added")
+	}
+}
+
 func main() {
+
 	file, err := os.Open("data.csv")
 	tools.CheckErr(err)
 	defer file.Close()
 	reader := csv.NewReader(bufio.NewReader(file))
 
-	db := tools.CreateEngine()
-	defer db.Close()
-	tools.MakeMigrations()
-	for {
-		line, error := reader.Read()
-		if error == io.EOF {
-			break
-		} else if error != nil {
-			log.Fatal(error)
-		}
-		customer := models.Customer{
-			Name:  line[1],
-			Email: line[2],
-			Phone: line[3],
-		}
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	tools.CheckErr(err)
+	defer conn.Close()
 
-		db.Create(&customer)
-		fmt.Printf("Customer saved\n")
+	client := api.NewWriterClient(conn)
+
+	for {
+		line, err := reader.Read()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			log.Fatal(err)
+		}
+		customer := NewCustomer(line)
+		createCustomer(client, customer)
 	}
 }

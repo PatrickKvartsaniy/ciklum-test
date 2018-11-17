@@ -1,0 +1,20 @@
+syntax = "proto3";
+package api;
+
+
+// The Customer service definition.
+service Writer {   
+  // Create a new Customer - A simple RPC 
+  rpc CreateCustomer (Customer) returns (CustomerResponse) {}
+}
+
+// Request message for creating a new customer
+message Customer {
+  string name = 1;
+  string email = 2;
+  string phone= 3;
+}
+
+message CustomerResponse {
+  bool success = 1;
+}
