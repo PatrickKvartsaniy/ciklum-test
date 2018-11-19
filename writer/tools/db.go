@@ -1,14 +1,14 @@
 package tools
 
 import (
-	"ciklum/writer/configs"
+	"ciklum/writer/config"
 	"ciklum/writer/models"
 
 	"github.com/jinzhu/gorm"
 )
 
 func CreateEngine() *gorm.DB {
-	db, err := gorm.Open("postgres", configs.DbRoute)
+	db, err := gorm.Open("postgres", config.DbRoute)
 	CheckErr(err)
 	return db
 }

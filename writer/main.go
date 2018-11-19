@@ -3,6 +3,7 @@ package main
 import (
 	"ciklum/api"
 	"ciklum/writer/tools"
+	"flag"
 	"log"
 	"net"
 
@@ -10,19 +11,21 @@ import (
 )
 
 func main() {
-	db := tools.CreateEngine()
-	defer db.Close()
-	tools.MakeMigrations()
+	//  Auto migrations for models
+	migrations := flag.Bool("makemigrations", false, "run migrations")
+	port := flag.String("port", "5001", "port to run")
+	flag.Parse()
 
-	lis, err := net.Listen("tcp", port)
+	if *migrations {
+		tools.MakeMigrations()
+	}
+	lis, err := net.Listen("tcp", ":"+*port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	// Creates a new gRPC server
 	s := grpc.NewServer()
-	api.RegisterWriterServer(s, &server{})
+	api.RegisterWriterServer(s, NewServer())
+	log.Println("Server running on 127.0.0.1:" + *port)
 	s.Serve(lis)
-	// db.Create(&customer)
-	// me := models.Customer{Name: "Petro", Email: "kvartsaniy@gmai.com", Phone: "+380938471506"}
-	// fmt.Println(me.Name)
 }
