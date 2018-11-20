@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  reader:
+    container_name: reader
+    build: ./reader
+    ports:
+      - "8080:8080"
+    command: ./reader
+    l
+
+  writer:
+    container_name: writer
+    build: ./writer
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./writer:/go/src/writer
+      - ./api:/go/src/api
+    command: ./writer
+
+  
