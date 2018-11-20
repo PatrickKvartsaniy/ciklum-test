@@ -1,5 +1,5 @@
 syntax = "proto3";
-package api;
+package main;
 
 
 // The Customer service definition.
