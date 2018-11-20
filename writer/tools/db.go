@@ -1,8 +1,8 @@
 package tools
 
 import (
-	"ciklum/writer/config"
-	"ciklum/writer/models"
+	"github.com/PatrickKvartsaniy/ciklum-test/writer/config"
+	"github.com/PatrickKvartsaniy/ciklum-test/writer/models"
 
 	"github.com/jinzhu/gorm"
 )

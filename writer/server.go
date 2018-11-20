@@ -1,11 +1,13 @@
 package main
 
 import (
-	"ciklum/api"
-	"ciklum/writer/models"
-	"ciklum/writer/tools"
 	"io"
 	"log"
+
+	"github.com/PatrickKvartsaniy/ciklum-test/api"
+
+	"github.com/PatrickKvartsaniy/ciklum-test/writer/models"
+	"github.com/PatrickKvartsaniy/ciklum-test/writer/tools"
 )
 
 // Server is used to implement customer.CustomerServer.

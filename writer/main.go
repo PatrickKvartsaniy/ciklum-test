@@ -1,11 +1,12 @@
 package main
 
 import (
-	"ciklum/api"
-	"ciklum/writer/tools"
 	"flag"
 	"log"
 	"net"
+
+	"github.com/PatrickKvartsaniy/ciklum-test/api"
+	"github.com/PatrickKvartsaniy/ciklum-test/writer/tools"
 
 	"google.golang.org/grpc"
 )

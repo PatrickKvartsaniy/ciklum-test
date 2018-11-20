@@ -2,14 +2,15 @@ package main
 
 import (
 	"bufio"
-	"ciklum/api"
-	"ciklum/reader/tools"
 	"context"
 	"encoding/csv"
 	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
+
+	"github.com/PatrickKvartsaniy/ciklum-test/api"
+	"github.com/PatrickKvartsaniy/ciklum-test/reader/tools"
 
 	"google.golang.org/grpc"
 )

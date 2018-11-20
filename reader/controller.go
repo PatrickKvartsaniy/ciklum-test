@@ -1,9 +1,10 @@
 package main
 
 import (
-	"ciklum/reader/tools"
 	"fmt"
 	"net/http"
+
+	"github.com/PatrickKvartsaniy/ciklum-test/reader/tools"
 )
 
 // Reader is "/ " handler
