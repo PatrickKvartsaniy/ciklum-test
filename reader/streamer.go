@@ -4,23 +4,31 @@ import (
 	"bufio"
 	"context"
 	"encoding/csv"
-	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
+	"os"
+	"sync"
 
 	"ciklum-test/reader/tools"
 
-	"github.com/PatrickKvartsaniy/ciklum-test/api"
+	"ciklum-test/api"
 
 	"google.golang.org/grpc"
 )
 
+// gRPC server adress
+var gRPC = os.Getenv("gRPC")
+
 // StreamCSV is implementation of  gRPC messages streaming
 func StreamCSV(file multipart.File) {
-	reader := csv.NewReader(bufio.NewReader(file))
+
 	// connecting to gRPC server
-	conn, err := grpc.Dial("127.0.0.1:5001", grpc.WithInsecure())
+	conn, err := grpc.Dial(
+		gRPC+":5001", //writer's docker address
+		grpc.WithInsecure(),
+	)
+
 	if err != nil {
 		log.Fatalf("Cant connect to grpc. Pls check if port is correct ")
 	}
@@ -31,34 +39,51 @@ func StreamCSV(file multipart.File) {
 	ctx := context.Background()
 	stream, err := client.CreateCustomer(ctx)
 	tools.CheckErr(err)
-	log.Println("Start streaming")
-	for {
-		line, err := reader.Read()
-		//  checking if stream is over
-		if err == io.EOF {
-			log.Println("Stream has been closed")
-			break
+
+	wg := &sync.WaitGroup{}
+	wg.Add(2)
+
+	// Sending
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		reader := csv.NewReader(bufio.NewReader(file))
+		for {
+			line, err := reader.Read()
+			if err == io.EOF {
+				break
+			}
+			//  skip csv head
+			if line[0] == "id" {
+				continue
+			}
+			// create & send gRPC customer
+			customer := newCustomer(line)
+			stream.Send(customer)
 		}
-		if err != nil {
-			tools.CheckErr(err)
-			break
+		// graceful shutdown
+		stream.CloseSend()
+	}(wg)
+
+	// Receiving
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		for {
+			response, err := stream.Recv()
+			//  checking if stream is over
+			if err == io.EOF {
+				log.Println("Stream has been closed")
+				return
+			} else if err != nil {
+				tools.CheckErr(err)
+				return
+			}
+			log.Println(response)
 		}
-		//  skip csv head
-		if line[0] == "id" {
-			continue
-		}
-		// create & send gRPC customer
-		customer := newCustomer(line)
-		if err := stream.Send(customer); err != nil {
-			log.Fatalf("%v.Send(%v) = %v", stream, customer, err)
-		}
-	}
-	reply, err := stream.CloseAndRecv()
-	tools.CheckErr(err)
-	fmt.Println(reply)
+	}(wg)
+	wg.Wait()
 }
 
-// newCustomer is gRPC customer factory
+// newCustomer is gRPC Customer  factory
 func newCustomer(line []string) *api.Customer {
 	return &api.Customer{
 		Name:  line[1],

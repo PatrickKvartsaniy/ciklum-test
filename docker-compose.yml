@@ -1,4 +1,4 @@
-version: '3'
+version: '3.1'
 
 services:
   reader:
@@ -6,14 +6,22 @@ services:
     build: ./reader
     ports:
       - "8080:8080"
-  # writer:
-  #   container_name: writer
-  #   build: ./writer
-  #   ports:
-  #     - "8081:8081"
-  #   volumes:
-  #     - ./writer:/go/src/writer
-  #     - ./api:/go/src/api
-  #   command: ./writer
-
-  
+  writer:
+    container_name: writer
+    build: ./writer
+    ports:
+      - "5001:5001"
+    depends_on:
+      - db
+    links:
+     - db
+  db:
+    container_name: db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: patrick
+      POSTGRES_PASSWORD: "erasmusmundus"
+      POSTGRES_DB: ciklum
+    ports:
+      - "5050:5432"

@@ -1,22 +1,25 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"log"
 
-	"github.com/PatrickKvartsaniy/ciklum-test/api"
-
-	"github.com/PatrickKvartsaniy/ciklum-test/writer/models"
-	"github.com/PatrickKvartsaniy/ciklum-test/writer/tools"
+	"ciklum-test/api"
 )
 
 // Server is used to implement customer.CustomerServer.
 type Server struct{}
 
+// NewServer - Server factory
+func NewServer() *Server {
+	return &Server{}
+}
+
 // CreateCustomer creates a new Customer
 func (s *Server) CreateCustomer(inStream api.Writer_CreateCustomerServer) error {
 
-	db := tools.CreateEngine()
+	db := CreateEngine()
 	defer db.Close()
 
 	for {
@@ -27,21 +30,27 @@ func (s *Server) CreateCustomer(inStream api.Writer_CreateCustomerServer) error 
 			return nil
 		}
 		if err != nil {
-			tools.CheckErr(err)
+			CheckErr(err)
 			return err
 		}
 		// create & save received customer to db
-		customer := models.CreateCustomerModel(inCustomer)
+		customer := CreateCustomer(inCustomer)
+		// check if customer does't exist - save
 		if err := db.Save(&customer).Error; err != nil {
-			updatedCustomer := models.UpdateCustomer(customer, inCustomer)
+			log.Fatal(err)
+			//  If it exists - update fileds
+			updatedCustomer := UpdateCustomer(customer, inCustomer)
 			db.Save(&updatedCustomer)
-			log.Printf("User :%v  has been successfully updated", customer.Name)
+			out := &api.CustomerResponse{
+				Response: fmt.Sprintf("User :%v  has been successfully updated", customer.Name),
+			}
+			inStream.Send(out)
+		} else {
+			out := &api.CustomerResponse{
+				Response: fmt.Sprintf("User :%v  has been successfully added", customer.Name),
+			}
+			inStream.Send(out)
 		}
-		log.Printf("User :%v  has been successfully added", customer.Name)
 	}
-}
-
-// NewServer - Server factory
-func NewServer() *Server {
-	return &Server{}
+	return nil
 }

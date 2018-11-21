@@ -5,7 +5,7 @@ package api;
 // The Customer service definition.
 service Writer {   
   // Create a new Customer - A simple RPC 
-  rpc CreateCustomer (stream Customer) returns (CustomerResponse) {}
+  rpc CreateCustomer (stream Customer) returns (stream CustomerResponse) {}
 }
 
 // Request message for creating a new customer
@@ -16,5 +16,5 @@ message Customer {
 }
 
 message CustomerResponse {
-  bool success = 1;
+  string response = 1;
 }

@@ -5,8 +5,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/PatrickKvartsaniy/ciklum-test/api"
-	"github.com/PatrickKvartsaniy/ciklum-test/writer/tools"
+	"ciklum-test/api"
 
 	"google.golang.org/grpc"
 )
@@ -18,7 +17,7 @@ func main() {
 	flag.Parse()
 
 	if *migrations {
-		tools.MakeMigrations()
+		MakeMigrations()
 	}
 	lis, err := net.Listen("tcp", ":"+*port)
 	if err != nil {

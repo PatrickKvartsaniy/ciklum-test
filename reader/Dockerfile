@@ -12,6 +12,8 @@ RUN GOARCH=amd64 CGO_ENABLED=0 GOOS=linux go build -o /go/bin/reader
 FROM scratch
 # Copy our static executable
 COPY --from=builder /go/bin/reader /go/bin/reader
+# Writer service adress
+ENV gRPC writer
 
-EXPOSE 8080
+
 CMD ["go/bin/reader", "-port=8080"]
