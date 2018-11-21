@@ -9,8 +9,9 @@ import (
 	"log"
 	"mime/multipart"
 
+	"ciklum-test/reader/tools"
+
 	"github.com/PatrickKvartsaniy/ciklum-test/api"
-	"github.com/PatrickKvartsaniy/ciklum-test/reader/tools"
 
 	"google.golang.org/grpc"
 )

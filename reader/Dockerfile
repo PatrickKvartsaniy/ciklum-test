@@ -1,15 +1,17 @@
+# STEP 1 build executable binary
 FROM golang as builder
 
-RUN apt-get update && apt-get install git
+COPY . $GOPATH/src/ciklum-test/reader
+WORKDIR $GOPATH/src/ciklum-test/reader
 
-RUN git clone https://github.com/PatrickKvartsaniy/ciklum-test
+#get dependancies
+RUN go get -d
+#build the binary
+RUN GOARCH=amd64 CGO_ENABLED=0 GOOS=linux go build -o /go/bin/reader
+# STEP 2 build a small image
+FROM scratch
+# Copy our static executable
+COPY --from=builder /go/bin/reader /go/bin/reader
 
-WORKDIR /go/src/reader/
-COPY . ./
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix .
-
-FROM alpine:latest
-WORKDIR /app/
-COPY --from=builder /go/src/reader/reader /app/reader
-EXPOSE 8888
-ENTRYPOINT ./reader
+EXPOSE 8080
+CMD ["go/bin/reader", "-port=8080"]

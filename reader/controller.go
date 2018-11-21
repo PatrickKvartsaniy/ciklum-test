@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/PatrickKvartsaniy/ciklum-test/reader/tools"
+	"ciklum-test/reader/tools"
 )
 
 // Reader is "/ " handler
