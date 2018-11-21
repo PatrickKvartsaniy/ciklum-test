@@ -5,7 +5,7 @@ import (
 	"io"
 	"log"
 
-	"ciklum-test/api"
+	"github.com/PatrickKvartsaniy/ciklum-test/api"
 )
 
 // Server is used to implement customer.CustomerServer.

@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	"ciklum-test/api"
+	"github.com/PatrickKvartsaniy/ciklum-test/api"
 
 	"google.golang.org/grpc"
 )

@@ -12,22 +12,22 @@ import (
 
 	"ciklum-test/reader/tools"
 
-	"ciklum-test/api"
+	"github.com/PatrickKvartsaniy/ciklum-test/api"
 
 	"google.golang.org/grpc"
 )
 
 // gRPC server adress
-var gRPC = os.Getenv("gRPC")
-
+var (
+	gHost = os.Getenv("gHost")
+	gPort := os.Getenv("gPort")
+	gRPC = gHost+":"+gPort
+)
 // StreamCSV is implementation of  gRPC messages streaming
 func StreamCSV(file multipart.File) {
 
 	// connecting to gRPC server
-	conn, err := grpc.Dial(
-		gRPC+":5001", //writer's docker address
-		grpc.WithInsecure(),
-	)
+	conn, err := grpc.Dial(gRPC,grpc.WithInsecure())
 
 	if err != nil {
 		log.Fatalf("Cant connect to grpc. Pls check if port is correct ")

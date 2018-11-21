@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ciklum-test/api"
+	"github.com/PatrickKvartsaniy/ciklum-test/api"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
