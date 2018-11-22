@@ -18,7 +18,7 @@ func NewServer() *Server {
 
 // CreateCustomer creates a new Customer
 func (s *Server) CreateCustomer(inStream api.Writer_CreateCustomerServer) error {
-
+	log.Println("Start streaming")
 	db := CreateEngine()
 	defer db.Close()
 
@@ -36,19 +36,16 @@ func (s *Server) CreateCustomer(inStream api.Writer_CreateCustomerServer) error 
 		// create & save received customer to db
 		customer := CreateCustomer(inCustomer)
 		// check if customer does't exist - save
-		if err := db.Save(&customer).Error; err != nil {
-			log.Fatal(err)
-			//  If it exists - update fileds
+		if db.Find(&customer).RecordNotFound() {
+			db.Save(&customer)
+			out := fmt.Sprintf("User :%v  has been successfully added", customer.Name)
+			log.Println(out)
+		} else {
 			updatedCustomer := UpdateCustomer(customer, inCustomer)
 			db.Save(&updatedCustomer)
 			out := fmt.Sprintf("User :%v  has been successfully updated", customer.Name)
 			log.Println(out)
-		} else if err != nil {
-			CheckErr(err)
-		} else {
-			out := fmt.Sprintf("User :%v  has been successfully added", customer.Name)
-			log.Println(out)
 		}
 	}
-	return nil
+	return inStream.SendAndClose(&api.CustomerResponse{})
 }

@@ -4,12 +4,11 @@ import (
 	"bufio"
 	"context"
 	"encoding/csv"
+	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
 	"os"
-
-	"ciklum-test/reader/tools"
 
 	"github.com/PatrickKvartsaniy/ciklum-test/api"
 
@@ -18,19 +17,19 @@ import (
 
 // gRPC server adress
 var (
-	gHost = os.Getenv("gHost")
-	gPort = os.Getenv("gPort")
+	gHost = os.Getenv("gHOST")
+	gPort = os.Getenv("gPORT")
 	gRPC  = gHost + ":" + gPort
 )
 
 // StreamCSV is implementation of  gRPC messages streaming
-func StreamCSV(file multipart.File) {
-
+func StreamCSV(file multipart.File) (string, error) {
+	var result string
 	// connecting to gRPC server
 	conn, err := grpc.Dial(gRPC, grpc.WithInsecure())
-
 	if err != nil {
-		log.Fatalf("Cant connect to grpc. Pls check if port is correct ")
+		log.Fatal(err)
+		return "", err
 	}
 	defer conn.Close()
 
@@ -38,15 +37,16 @@ func StreamCSV(file multipart.File) {
 
 	ctx := context.Background()
 	stream, err := client.CreateCustomer(ctx)
-	tools.CheckErr(err)
 
 	reader := csv.NewReader(bufio.NewReader(file))
+	log.Println("Start streaming")
 	for {
-		line, err := reader.Read()
-		if err == io.EOF {
+		line, readerErr := reader.Read()
+		if readerErr == io.EOF {
 			break
-		} else if err != nil {
-			tools.CheckErr(err)
+		} else if readerErr != nil {
+			log.Fatal(err)
+			return "", err
 		}
 		// skip csv head
 		if line[0] == "id" {
@@ -55,16 +55,19 @@ func StreamCSV(file multipart.File) {
 		// create & send gRPC customer
 		customer := newCustomer(line)
 		if err := stream.Send(customer); err != nil {
-			tools.CheckErr(err)
+			log.Fatal(err)
 		}
 	}
 	// graceful shutdown
-	reply, err := stream.CloseAndRecv()
-	if err != nil {
-		log.Fatalf("%v.CloseAndRecv() got error %v, want %v", stream, err, nil)
-	} else {
-		log.Println("Customers have been successfully saved")
+	_, err = stream.CloseAndRecv()
+	if err == io.EOF {
+		log.Println("Stream has been closed")
+		result = "Customers have been successufly added"
+	} else if err != nil {
+		result = fmt.Sprintf("Stream.CloseAndRecv() got error %v, want %v", err, nil)
+		return result, err
 	}
+	return result, nil
 }
 
 // newCustomer is gRPC Customer  factory

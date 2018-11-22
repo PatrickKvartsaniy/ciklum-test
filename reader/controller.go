@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-
-	"ciklum-test/reader/tools"
 )
 
 // Reader is "/ " handler
@@ -18,12 +16,21 @@ func Reader(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 		if fileType != "text/csv" {
+			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "Unexpected file, pls choose CSV file")
 			return
 		}
 		defer file.Close()
 
-		StreamCSV(file)
+		result, err := StreamCSV(file)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "Something went wrong :/. Error: ", err)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, result)
+		return
 	}
-	tools.RenderPage(w, e)
+	RenderPage(w, e)
 }
