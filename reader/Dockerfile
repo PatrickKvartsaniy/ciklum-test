@@ -8,6 +8,7 @@ WORKDIR $GOPATH/src/ciklum-test/reader
 RUN go get -d
 #build the binary
 RUN GOARCH=amd64 CGO_ENABLED=0 GOOS=linux go build -o /go/bin/reader
+
 # STEP 2 build a small image
 FROM scratch
 # Copy our static executable

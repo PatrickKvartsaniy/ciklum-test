@@ -4,20 +4,18 @@ Ciklum pre-employment technical skills test
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+These instructions will get you a copy of the project up and running on your local machine for development purposes. See deployment for notes on how to deploy the project on a live system.
 
 
 ### Installing
 
-run $git clone https://github.com/PatrickKvartsaniy/ciklum-test.git
+clone repo with $ git clone https://github.com/PatrickKvartsaniy/ciklum-test.git
 
 
-## Running the tests
+## Build & Running
 
-Tests run automatically after you start build process
+for build and run containers with microservices run $ docker-compose up
 
-## Build    
+## Tests
 
-Add additional notes about how to deploy this on a live system
-
-
+As you can see, I made advanced tasks. Unfortunately, after this I found that I don't know how to write tests for gRPC and I have no more extra time. But you can be sure product works right, I've been testing it.

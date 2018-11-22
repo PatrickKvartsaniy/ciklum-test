@@ -40,9 +40,10 @@ func (s *Server) CreateCustomer(inStream api.Writer_CreateCustomerServer) error 
 		var a Customer
 		if db.Debug().First(&a, "email = ? OR phone = ?", customer.Email, customer.Phone).RecordNotFound() {
 			db.Save(&customer)
-			out := fmt.Sprintf("User :%v  has been successfully added", customer.Name)
+			out := fmt.Sprintf("User :%v  has been successfully created", customer.Name)
 			log.Println(out)
 		} else {
+			// if it does - update fields
 			var existCustomer Customer
 			db.Where("email = ?", customer.Email).Find(&existCustomer)
 			updatedCustomer := UpdateCustomer(existCustomer, customer)

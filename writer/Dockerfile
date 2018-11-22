@@ -8,6 +8,7 @@ WORKDIR $GOPATH/src/ciklum-test/writer
 RUN go get -d
 #build the binary
 RUN GOARCH=amd64 CGO_ENABLED=0 GOOS=linux go build -o /go/bin/writer
+
 # STEP 2 build a small image
 FROM scratch
 # Copy our static executable
