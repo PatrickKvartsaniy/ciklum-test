@@ -27,5 +27,5 @@ func main() {
 	s := grpc.NewServer()
 	api.RegisterWriterServer(s, NewServer())
 	log.Println("Server running on 127.0.0.1:" + *port)
-	s.Serve(lis)
+	log.Fatal(s.Serve(lis))
 }

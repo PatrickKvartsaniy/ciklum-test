@@ -8,7 +8,10 @@ import (
 
 func CreateEngine() *gorm.DB {
 	db, err := gorm.Open("postgres", DbRoute)
-	CheckErr(err)
+	if err != nil {
+		log.Fatal(err)
+	}
+	db.LogMode(false)
 	return db
 }
 
@@ -17,11 +20,4 @@ func MakeMigrations() {
 	defer db.Close()
 
 	db.AutoMigrate(&Customer{})
-}
-
-func CheckErr(err error) {
-	if err != nil {
-		// panic(err)
-		log.Println(err.Error())
-	}
 }

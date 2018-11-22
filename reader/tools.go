@@ -6,11 +6,10 @@ import (
 	"runtime"
 )
 
-// PrintMemUsage printing RAM usage
+// PrintMemUsage prints RAM usage
 func PrintMemUsage() {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	// For info on each, see: https://golang.org/pkg/runtime/#MemStats
 	fmt.Printf("Alloc = %v MiB", bToMb(m.Alloc))
 	fmt.Printf("\tTotalAlloc = %v MiB", bToMb(m.TotalAlloc))
 	fmt.Printf("\tSys = %v MiB", bToMb(m.Sys))
@@ -21,7 +20,8 @@ func bToMb(b uint64) uint64 {
 	return b / 1024 / 1024
 }
 
-func RenderPage(w http.ResponseWriter, e string) {
+// RenderPage - index page rendering
+func RenderPage(w http.ResponseWriter) {
 	fmt.Fprint(w, tmpl)
 }
 

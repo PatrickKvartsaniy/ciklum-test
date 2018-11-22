@@ -42,6 +42,7 @@ func StreamCSV(file multipart.File) (string, error) {
 	log.Println("Start streaming")
 	for {
 		line, readerErr := reader.Read()
+		// if file ends
 		if readerErr == io.EOF {
 			break
 		} else if readerErr != nil {

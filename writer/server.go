@@ -30,18 +30,22 @@ func (s *Server) CreateCustomer(inStream api.Writer_CreateCustomerServer) error 
 			return nil
 		}
 		if err != nil {
-			CheckErr(err)
+			log.Fatal(err)
 			return err
 		}
+
 		// create & save received customer to db
 		customer := CreateCustomer(inCustomer)
 		// check if customer does't exist - save
-		if db.Find(&customer).RecordNotFound() {
+		var a Customer
+		if db.Debug().First(&a, "email = ? OR phone = ?", customer.Email, customer.Phone).RecordNotFound() {
 			db.Save(&customer)
 			out := fmt.Sprintf("User :%v  has been successfully added", customer.Name)
 			log.Println(out)
 		} else {
-			updatedCustomer := UpdateCustomer(customer, inCustomer)
+			var existCustomer Customer
+			db.Where("email = ?", customer.Email).Find(&existCustomer)
+			updatedCustomer := UpdateCustomer(existCustomer, customer)
 			db.Save(&updatedCustomer)
 			out := fmt.Sprintf("User :%v  has been successfully updated", customer.Name)
 			log.Println(out)
