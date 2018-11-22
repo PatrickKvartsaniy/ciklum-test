@@ -13,6 +13,6 @@ func main() {
 
 	http.HandleFunc("/", Reader)
 	log.Println("Server running on 127.0.0.1:" + *port)
-	http.ListenAndServe(":"+*port, nil)
+	// log.Fatal(http.ListenAndServe(":"+*port, nil))
 
 }

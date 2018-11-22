@@ -1,11 +1,12 @@
 syntax = "proto3";
 package api;
 
+// protoc --go_out=plugins=grpc:. *.proto
 
 // The Customer service definition.
 service Writer {   
   // Create a new Customer - A simple RPC 
-  rpc CreateCustomer (stream Customer) returns (stream CustomerResponse) {}
+  rpc CreateCustomer (stream Customer) returns (CustomerResponse) {}
 }
 
 // Request message for creating a new customer
@@ -16,5 +17,5 @@ message Customer {
 }
 
 message CustomerResponse {
-  string response = 1;
+  bool response = 1;
 }

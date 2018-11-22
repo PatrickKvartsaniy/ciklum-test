@@ -41,15 +41,13 @@ func (s *Server) CreateCustomer(inStream api.Writer_CreateCustomerServer) error 
 			//  If it exists - update fileds
 			updatedCustomer := UpdateCustomer(customer, inCustomer)
 			db.Save(&updatedCustomer)
-			out := &api.CustomerResponse{
-				Response: fmt.Sprintf("User :%v  has been successfully updated", customer.Name),
-			}
-			inStream.Send(out)
+			out := fmt.Sprintf("User :%v  has been successfully updated", customer.Name)
+			log.Println(out)
+		} else if err != nil {
+			CheckErr(err)
 		} else {
-			out := &api.CustomerResponse{
-				Response: fmt.Sprintf("User :%v  has been successfully added", customer.Name),
-			}
-			inStream.Send(out)
+			out := fmt.Sprintf("User :%v  has been successfully added", customer.Name)
+			log.Println(out)
 		}
 	}
 	return nil

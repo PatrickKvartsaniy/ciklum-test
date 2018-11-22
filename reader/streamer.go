@@ -8,7 +8,6 @@ import (
 	"log"
 	"mime/multipart"
 	"os"
-	"sync"
 
 	"ciklum-test/reader/tools"
 
@@ -41,47 +40,31 @@ func StreamCSV(file multipart.File) {
 	stream, err := client.CreateCustomer(ctx)
 	tools.CheckErr(err)
 
-	wg := &sync.WaitGroup{}
-	wg.Add(2)
-
-	// Sending
-	go func(wg *sync.WaitGroup) {
-		defer wg.Done()
-		reader := csv.NewReader(bufio.NewReader(file))
-		for {
-			line, err := reader.Read()
-			if err == io.EOF {
-				break
-			}
-			//  skip csv head
-			if line[0] == "id" {
-				continue
-			}
-			// create & send gRPC customer
-			customer := newCustomer(line)
-			stream.Send(customer)
+	reader := csv.NewReader(bufio.NewReader(file))
+	for {
+		line, err := reader.Read()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			tools.CheckErr(err)
 		}
-		// graceful shutdown
-		stream.CloseSend()
-	}(wg)
-
-	// Receiving
-	go func(wg *sync.WaitGroup) {
-		defer wg.Done()
-		for {
-			response, err := stream.Recv()
-			//  checking if stream is over
-			if err == io.EOF {
-				log.Println("Stream has been closed")
-				return
-			} else if err != nil {
-				tools.CheckErr(err)
-				return
-			}
-			log.Println(" -> ", response.Response)
+		// skip csv head
+		if line[0] == "id" {
+			continue
 		}
-	}(wg)
-	wg.Wait()
+		// create & send gRPC customer
+		customer := newCustomer(line)
+		if err := stream.Send(customer); err != nil {
+			tools.CheckErr(err)
+		}
+	}
+	// graceful shutdown
+	reply, err := stream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("%v.CloseAndRecv() got error %v, want %v", stream, err, nil)
+	} else {
+		log.Println("Customers have been successfully saved")
+	}
 }
 
 // newCustomer is gRPC Customer  factory
