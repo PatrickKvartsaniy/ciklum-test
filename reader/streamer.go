@@ -20,14 +20,15 @@ import (
 // gRPC server adress
 var (
 	gHost = os.Getenv("gHost")
-	gPort := os.Getenv("gPort")
-	gRPC = gHost+":"+gPort
+	gPort = os.Getenv("gPort")
+	gRPC  = gHost + ":" + gPort
 )
+
 // StreamCSV is implementation of  gRPC messages streaming
 func StreamCSV(file multipart.File) {
 
 	// connecting to gRPC server
-	conn, err := grpc.Dial(gRPC,grpc.WithInsecure())
+	conn, err := grpc.Dial(gRPC, grpc.WithInsecure())
 
 	if err != nil {
 		log.Fatalf("Cant connect to grpc. Pls check if port is correct ")
@@ -77,7 +78,7 @@ func StreamCSV(file multipart.File) {
 				tools.CheckErr(err)
 				return
 			}
-			log.Println(response)
+			log.Println(" -> ", response.Response)
 		}
 	}(wg)
 	wg.Wait()
