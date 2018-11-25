@@ -28,8 +28,9 @@ func StreamCSV(file multipart.File) (string, error) {
 	// connecting to gRPC server
 	conn, err := grpc.Dial(gRPC, grpc.WithInsecure())
 	if err != nil {
-		log.Fatal(err)
-		return "", err
+		msg := fmt.Sprintf("An error occurred while connecting to grpc server. Error: %v", err)
+		log.Fatal(msg)
+		return msg, err
 	}
 	defer conn.Close()
 
@@ -39,15 +40,16 @@ func StreamCSV(file multipart.File) (string, error) {
 	stream, err := client.CreateCustomer(ctx)
 
 	reader := csv.NewReader(bufio.NewReader(file))
-	log.Println("Start streaming")
+	log.Println("Start streaming csv file")
 	for {
 		line, readerErr := reader.Read()
-		// if file ends
+		// if file is over
 		if readerErr == io.EOF {
 			break
 		} else if readerErr != nil {
-			log.Fatal(err)
-			return "", err
+			msg := fmt.Sprintf("Something went wrong while trying read %v line from csv file. Error: %v", line[0], readerErr)
+			log.Fatalf(msg)
+			return msg, err
 		}
 		// skip csv head
 		if line[0] == "id" {
@@ -56,11 +58,11 @@ func StreamCSV(file multipart.File) (string, error) {
 		// create & send gRPC customer
 		customer := newCustomer(line)
 		if err := stream.Send(customer); err != nil {
-			log.Fatal(err)
+			log.Fatalf("An error occurred while trying to send customer %v data. Error: %v", line[0], err)
 		}
 	}
 	// graceful shutdown
-	_, err = stream.CloseAndRecv()
+	_, err = stream.CloseAndRecv() //  _ - because we don't exprect any data from server
 	if err == io.EOF {
 		log.Println("Stream has been closed")
 		result = "Customers have been successufly added"
@@ -71,7 +73,6 @@ func StreamCSV(file multipart.File) (string, error) {
 	return result, nil
 }
 
-// newCustomer is gRPC Customer  factory
 func newCustomer(line []string) *api.Customer {
 	return &api.Customer{
 		Name:  line[1],

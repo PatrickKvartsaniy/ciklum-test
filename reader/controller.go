@@ -5,7 +5,6 @@ import (
 	"net/http"
 )
 
-// Reader is "/ "  url handler
 func Reader(w http.ResponseWriter, req *http.Request) {
 	// if we got a file
 	if req.Method == http.MethodPost {
@@ -27,13 +26,16 @@ func Reader(w http.ResponseWriter, req *http.Request) {
 		result, err := StreamCSV(file)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-			fmt.Fprintf(w, "Something went wrong :/ Error: ", err)
+			fmt.Fprintf(w, "Something went wrong. Message from server:", result)
 			return
 		}
 		// if everything is fine
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, result)
 		return
+	} else if req.Method == http.MethodGet {
+		RenderPage(w)
+	} else {
+		http.Error(w, "405 Status Not Allowed", http.StatusMethodNotAllowed)
 	}
-	RenderPage(w)
 }

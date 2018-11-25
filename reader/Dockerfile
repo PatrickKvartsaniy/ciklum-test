@@ -17,4 +17,4 @@ COPY --from=builder /go/bin/reader /go/bin/reader
 ENV gHOST writer
 ENV gPORT 5001
 
-CMD ["go/bin/reader", "-port=8080"]
+CMD ["go/bin/reader", "-port=5005"]

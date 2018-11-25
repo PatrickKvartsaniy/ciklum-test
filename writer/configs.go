@@ -15,6 +15,8 @@ var (
 	sslmode  = "disable"
 )
 
-// DbRoute contain full DataBase route
-var DbRoute = fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-	host, port, user, database, password, sslmode)
+func SetupDB() string {
+	DbRoute := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
+		host, port, user, database, password, sslmode)
+	return DbRoute
+}

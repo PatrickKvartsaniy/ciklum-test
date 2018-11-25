@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	//  Auto migrations for models
+	//  Auto migration for model
 	migrations := flag.Bool("makemigrations", false, "run migrations")
 	port := flag.String("port", "5001", "port to run")
 	flag.Parse()

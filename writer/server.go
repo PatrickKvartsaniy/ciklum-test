@@ -8,15 +8,12 @@ import (
 	"github.com/PatrickKvartsaniy/ciklum-test/api"
 )
 
-// Server is used to implement customer.CustomerServer.
 type Server struct{}
 
-// NewServer - Server factory
 func NewServer() *Server {
 	return &Server{}
 }
 
-// CreateCustomer creates a new Customer
 func (s *Server) CreateCustomer(inStream api.Writer_CreateCustomerServer) error {
 	log.Println("Start streaming")
 	db := CreateEngine()
@@ -34,7 +31,7 @@ func (s *Server) CreateCustomer(inStream api.Writer_CreateCustomerServer) error 
 			return err
 		}
 
-		// create & save received customer to db
+		// create received customer object
 		customer := CreateCustomer(inCustomer)
 		// check if customer does't exist - save
 		var a Customer
@@ -43,7 +40,7 @@ func (s *Server) CreateCustomer(inStream api.Writer_CreateCustomerServer) error 
 			out := fmt.Sprintf("User :%v  has been successfully created", customer.Name)
 			log.Println(out)
 		} else {
-			// if it does - update fields
+			// else - update fields
 			var existCustomer Customer
 			db.Where("email = ?", customer.Email).Find(&existCustomer)
 			updatedCustomer := UpdateCustomer(existCustomer, customer)
