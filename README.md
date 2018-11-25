@@ -19,3 +19,11 @@ for build and run containers with microservices run $ docker-compose up
 ## Tests
 
 As you can see, I made advanced tasks. Unfortunately, after this I found that I don't know how to write tests for gRPC and I have no more extra time. But you can be sure product works right, I've been testing it.
+
+## Usage
+
+1. Follow "localhost:5005" in your browser. 
+2. Choose file and click button
+3. Here it is:)
+4. Open postgres client  by command $psql -h localhost -p 5050 -U patrick ciklum
+5. Select all rows from "customers" table. 

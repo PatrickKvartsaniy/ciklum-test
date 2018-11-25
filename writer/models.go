@@ -14,7 +14,7 @@ import (
 )
 
 func CreateEngine() *gorm.DB {
-	uri = SetupDB()
+	uri := SetupDB()
 	db, err := gorm.Open("postgres", uri)
 	if err != nil {
 		log.Fatalf("Something went wrong while connecting to database %v. Error: %v.", db, err)

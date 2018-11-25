@@ -37,7 +37,7 @@ func (s *Server) CreateCustomer(inStream api.Writer_CreateCustomerServer) error 
 		var a Customer
 		if db.Debug().First(&a, "email = ? OR phone = ?", customer.Email, customer.Phone).RecordNotFound() {
 			db.Save(&customer)
-			out := fmt.Sprintf("User :%v  has been successfully created", customer.Name)
+			out := fmt.Sprintf("Customer :%v  has been successfully created", customer.Name)
 			log.Println(out)
 		} else {
 			// else - update fields
@@ -45,7 +45,7 @@ func (s *Server) CreateCustomer(inStream api.Writer_CreateCustomerServer) error 
 			db.Where("email = ?", customer.Email).Find(&existCustomer)
 			updatedCustomer := UpdateCustomer(existCustomer, customer)
 			db.Save(&updatedCustomer)
-			out := fmt.Sprintf("User :%v  has been successfully updated", customer.Name)
+			out := fmt.Sprintf("Customer :%v  has been successfully updated", customer.Name)
 			log.Println(out)
 		}
 	}
