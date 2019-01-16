@@ -16,10 +16,6 @@ clone repo with $ git clone https://github.com/PatrickKvartsaniy/ciklum-test.git
 
 for build and run containers with microservices run $ docker-compose up
 
-## Tests
-
-As you can see, I made advanced tasks. Unfortunately, after this I found that I don't know how to write tests for gRPC and I have no more extra time. But you can be sure product works right, I've been testing it.
-
 ## Usage
 
 1. Follow "localhost:5005" in your browser. 
